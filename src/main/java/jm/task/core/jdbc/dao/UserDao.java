@@ -4,7 +4,7 @@ import jm.task.core.jdbc.model.User;
 
 import java.util.List;
 
-public interface UserDao {
+public interface UserDao extends AutoCloseable{
     void createUsersTable();
 
     void dropUsersTable();
@@ -16,4 +16,6 @@ public interface UserDao {
     List<User> getAllUsers();
 
     void cleanUsersTable();
+
+    void close();
 }

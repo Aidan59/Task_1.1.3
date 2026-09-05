@@ -13,8 +13,18 @@ import jm.task.core.jdbc.util.Util;
 
 public class UserDaoJDBCImpl implements UserDao {
 
+    private final Connection connection;
+
+    public UserDaoJDBCImpl() {
+        try {
+            connection = Util.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void createUsersTable() {
-        try (Connection connection = Util.getConnection()){
+        try {
             Statement statement = connection.createStatement();
 
             statement.execute("""
@@ -32,7 +42,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (Connection connection = Util.getConnection()){
+        try {
             Statement statement = connection.createStatement();
 
             statement.execute("""
@@ -45,7 +55,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (Connection connection = Util.getConnection()){
+        try {
             String query = "INSERT INTO users (name, last_name, age) VALUES (?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
 
@@ -61,7 +71,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (Connection connection = Util.getConnection()){
+        try {
             String query = "DELETE FROM users WHERE id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
 
@@ -75,7 +85,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public List<User> getAllUsers() {
-        try (Connection connection = Util.getConnection()){
+        try {
             String query = "SELECT * FROM users";
             PreparedStatement statement = connection.prepareStatement(query);
 
@@ -100,7 +110,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
         public void cleanUsersTable() {
-        try (Connection connection = Util.getConnection()){
+        try {
             Statement statement = connection.createStatement();
 
             statement.execute("""
@@ -109,6 +119,15 @@ public class UserDaoJDBCImpl implements UserDao {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
